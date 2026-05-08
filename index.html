@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Nagpur Weather Dashboard</title>
+
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+  <!-- External stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app" class="app" role="application" aria-label="Nagpur Weather Dashboard">
+
+    <!-- Header -->
+    <header class="app-header" role="banner">
+      <div class="brand">
+        <div class="logo">NG</div>
+        <div class="brand-text">
+          <h1>Nagpur Weather</h1>
+          <p class="tag">Current • Weekly • Details</p>
+        </div>
+      </div>
+
+      <nav class="top-nav" role="navigation" aria-label="Main navigation">
+        <button class="nav-btn active" data-target="home" aria-pressed="true"><i class="fa-solid fa-house"></i> Home</button>
+        <button class="nav-btn" data-target="forecast" aria-pressed="false"><i class="fa-solid fa-calendar-week"></i> Forecast</button>
+        <button class="nav-btn" data-target="details" aria-pressed="false"><i class="fa-solid fa-table-list"></i> Details</button>
+        <button id="refreshBtn" class="icon-btn" title="Refresh"><i class="fa-solid fa-arrows-rotate"></i></button>
+      </nav>
+    </header>
+
+    <!-- Main layout: left content + right sidebar -->
+    <main class="layout" role="main">
+
+      <!-- Left column: pages (home / forecast / details) -->
+      <section class="content" id="pages">
+
+        <!-- HOME PAGE -->
+        <article id="home" class="page" aria-labelledby="home-heading">
+          <h2 id="home-heading" class="page-title">Current Weather</h2>
+
+          <div class="current-panel">
+            <div class="visual">
+              <div class="bg-sky"></div>
+              <i id="mainIcon" class="fa-solid fa-sun large-icon" title="Condition"></i>
+            </div>
+
+            <div class="current-meta">
+              <div class="city-row">
+                <h3 id="cityName">Nagpur, India</h3>
+                <div id="localTime" class="muted">Friday, 8 May 2026 • 20:03 IST</div>
+              </div>
+
+              <div class="temp-row" role="status" aria-live="polite">
+                <div class="temp-value" id="tempValue">34<span class="deg">°C</span></div>
+                <div class="temp-extra">
+                  <div id="feelsLike" class="muted">Feels like 36°C</div>
+                  <div id="conditionText" class="muted">Partly Cloudy</div>
+                </div>
+              </div>
+
+              <div class="quick-stats">
+                <div class="stat">
+                  <i class="fa-solid fa-droplet"></i>
+                  <div>
+                    <div class="label">Humidity</div>
+                    <div id="statHumidity" class="value">60%</div>
+                  </div>
+                </div>
+
+                <div class="stat">
+                  <i class="fa-solid fa-wind"></i>
+                  <div>
+                    <div class="label">Wind</div>
+                    <div id="statWind" class="value">14 km/h</div>
+                  </div>
+                </div>
+
+                <div class="stat">
+                  <i class="fa-solid fa-gauge-high"></i>
+                  <div>
+                    <div class="label">Pressure</div>
+                    <div id="statPressure" class="value">1011 hPa</div>
+                  </div>
+                </div>
+
+                <div class="stat">
+                  <i class="fa-solid fa-sun"></i>
+                  <div>
+                    <div class="label">UV Index</div>
+                    <div id="statUV" class="value">7</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <section class="overview">
+            <h4>Overview</h4>
+            <p id="overviewText" class="muted">
+              Nagpur is experiencing warm conditions with scattered clouds. Use the forecast tab for a 7-day outlook and the details tab for an expanded table of metrics.
+            </p>
+
+            <div class="details-preview">
+              <table>
+                <tr><td>Sunrise</td><td id="previewSunrise">05:40 AM</td></tr>
+                <tr><td>Sunset</td><td id="previewSunset">06:50 PM</td></tr>
+                <tr><td>Air Quality</td><td id="previewAQI">Good (AQI 55)</td></tr>
+                <tr><td>Visibility</td><td id="previewVisibility">10 km</td></tr>
+              </table>
+            </div>
+          </section>
+        </article>
+
+        <!-- FORECAST PAGE -->
+        <article id="forecast" class="page hidden" aria-labelledby="forecast-heading">
+          <h2 id="forecast-heading" class="page-title">7-Day Forecast</h2>
+
+          <div class="forecast-strip" id="forecastStrip" role="list" aria-label="7 day forecast">
+            <!-- JS injects forecast cards -->
+          </div>
+
+          <div class="forecast-note">
+            <p class="muted">Click a day to expand hourly details. This strip is horizontally scrollable on small screens.</p>
+          </div>
+
+          <div class="chart-placeholder">
+            <h4>Temperature Trend</h4>
+            <div class="chart-box muted">Chart placeholder — integrate Chart.js for live graphs</div>
+          </div>
+        </article>
+
+        <!-- DETAILS PAGE -->
+        <article id="details" class="page hidden" aria-labelledby="details-heading">
+          <h2 id="details-heading" class="page-title">Weather Details</h2>
+
+          <div class="controls-row">
+            <input id="filterInput" type="search" placeholder="Filter metrics (e.g., humidity)" aria-label="Filter metrics">
+            <select id="sortSelect" aria-label="Sort metrics">
+              <option value="none">Sort: None</option>
+              <option value="name-asc">Name A→Z</option>
+              <option value="name-desc">Name Z→A</option>
+              <option value="value-desc">Value ↓</option>
+              <option value="value-asc">Value ↑</option>
+            </select>
+            <button id="exportBtn" class="btn">Export (demo)</button>
+          </div>
+
+          <div class="table-wrap">
+            <table id="metricsTable" class="metrics-table" role="table" aria-label="Weather metrics">
+              <thead>
+                <tr>
+                  <th>Metric</th>
+                  <th>Value</th>
+                  <th>Unit</th>
+                  <th>Trend</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody id="metricsBody">
+                <!-- JS injects rows -->
+              </tbody>
+            </table>
+          </div>
+        </article>
+
+      </section>
+
+      <!-- Right column: sidebar -->
+      <aside class="sidebar" role="complementary" aria-label="Controls and mini forecast">
+        <div class="search">
+          <input id="cityInput" type="search" placeholder="Search city (e.g., Nagpur)" aria-label="City search">
+          <button id="searchBtn" class="btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+        </div>
+
+        <div class="mini-forecast" id="miniForecast" role="list" aria-label="Mini 7 day forecast">
+          <!-- JS injects mini cards -->
+        </div>
+
+        <div class="widget">
+          <h4>Sunrise / Sunset</h4>
+          <p id="widgetSun" class="muted">Sunrise 05:40 AM • Sunset 06:50 PM</p>
+        </div>
+
+        <div class="widget">
+          <h4>Air Quality</h4>
+          <p id="widgetAQI" class="muted">Good • AQI 55</p>
+        </div>
+
+        <div class="widget">
+          <h4>Quick Links</h4>
+          <div class="links">
+            <button id="openForecast" class="link-btn">Open Forecast</button>
+            <button id="openDetails" class="link-btn">Open Details</button>
+          </div>
+        </div>
+
+        <div class="attribution muted">© 2026 Nagpur Weather • Demo data • Font Awesome icons</div>
+      </aside>
+
+    </main>
+  </div>
+
+  <!-- External JavaScript -->
+  <script src="script.js"></script>
+</body>
+</html>
